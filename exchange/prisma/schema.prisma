@@ -1,0 +1,101 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Trader {
+  id      String @id
+  name    String
+  balance Float
+
+  sessions  Session[]
+  trades    Order[]
+  portfolio Ownership[]
+
+  premium      Boolean @default(false) // TODO: Allow more than 3 trades/day.
+  oneTimeToken String  @unique @default(cuid()) @map("one_time_token") // TODO: Regenerates after each use.
+
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  usedToken String   @unique @map("used_token")
+  expiry    DateTime
+
+  trader   Trader @relation(fields: [traderId], references: [id])
+  traderId String @map("trader_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Stock {
+  symbol  String   @id
+  name    String
+  summary String
+  tags    String[]
+  volume  Int
+
+  stockPrices StockPrice[]
+
+  tradingOpen  Float @map("trading_open")
+  price        Float
+  tradingClose Float @map("trading_close")
+
+  owners Ownership[]
+  trades Order[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model StockPrice {
+  id           DateTime @id @default(now())
+  tradingHigh  Float    @map("trading_high")
+  tradingLow   Float    @map("trading_low")
+  probableHigh Float    @map("probable_high")
+  probableLow  Float    @map("probable_low")
+  pivot        Float    @map("pivot")
+
+  stock  Stock  @relation(fields: [symbol], references: [symbol])
+  symbol String @map("symbol")
+}
+
+enum OrderType {
+  BUY
+  SELL
+}
+
+model Order {
+  id       String    @id @default(cuid())
+  type     OrderType
+  price    Float
+  quantity Int
+
+  trader   Trader @relation(fields: [traderId], references: [id])
+  traderId String @map("trader_id")
+
+  stock  Stock  @relation(fields: [symbol], references: [symbol])
+  symbol String @map("symbol")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  filledAt  DateTime? @map("filled_at")
+}
+
+model Ownership {
+  trader   Trader @relation(fields: [traderId], references: [id])
+  traderId String @map("trader_id")
+
+  stock  Stock  @relation(fields: [symbol], references: [symbol])
+  symbol String @map("symbol")
+
+  quantity Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@id([traderId, symbol])
+}

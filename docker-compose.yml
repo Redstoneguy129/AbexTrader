@@ -1,0 +1,16 @@
+version: "3"
+services:
+  db:
+    image: postgres:alpine
+    container_name: abextrader_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=abextrader
+  websocket:
+    image: redis:alpine
+    container_name: abextrader_websocket
+    ports:
+      - "6379:6379"

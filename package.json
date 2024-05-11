@@ -1,0 +1,26 @@
+{
+  "name": "abextrader",
+  "version": "1.0.0",
+  "description": "Self-Hosted Stock Exchange with Client",
+  "workspaces": [
+    "client",
+    "exchange"
+  ],
+  "scripts": {
+    "client": "cd client && npm run tauri dev",
+    "exchange": "cd exchange && npm run start:dev",
+    "format": "prettier --write \"exchange/src/**/*.ts\""
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.4.5"
+  },
+  "keywords": [],
+  "author": "Redstoneguy129",
+  "license": "ISC"
+}
